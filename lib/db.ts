@@ -28,6 +28,14 @@ export const products = pgTable('products', {
   availableAt: timestamp('available_at').notNull()
 });
 
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  name: text('name').notNull(),
+  username: text('username').notNull().unique(),
+  password: text('password').notNull(),
+});
+
 export type SelectProduct = typeof products.$inferSelect;
 export const insertProductSchema = createInsertSchema(products);
 
@@ -70,3 +78,35 @@ export async function getProducts(
 export async function deleteProductById(id: number) {
   await db.delete(products).where(eq(products.id, id));
 }
+
+// Crée un utilisateur dans la base de données
+export async function createUser({
+  email,
+  name,
+  username,
+  password,
+}: {
+  email: string;
+  name: string;
+  username: string;
+  password: string;
+}) {
+  await db.insert(users).values({
+    email,
+    name,
+    username,
+    password,
+  });
+}
+
+// Trouver un utilisateur par email
+export async function findUserByEmail(email: string): Promise<SelectUser | null> {
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
+
+  return user.length > 0 ? user[0] : null;
+}
+

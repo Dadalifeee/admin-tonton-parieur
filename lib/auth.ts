@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import GitHub from 'next-auth/providers/github';
+import bcrypt from 'bcryptjs';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [GitHub]
@@ -26,8 +27,11 @@ function getUserFromDatabase(email: string) {
   };
 }
 
-function hashPassword(password: string) {
-  // Simule un hachage de mot de passe, utilise bcrypt ou une autre bibliothèque pour sécuriser
-  return 'hashedpassword123'; // C'est juste un exemple, tu devrais utiliser bcrypt ou argon2 pour le vrai hash
+export async function hashPassword(password: string) {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
 }
 
+export async function verifyPassword(password: string, hashedPassword: string) {
+  return bcrypt.compare(password, hashedPassword);
+}

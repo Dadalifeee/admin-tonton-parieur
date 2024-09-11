@@ -7,6 +7,7 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
+  CardContent,
   CardTitle
 } from '@/components/ui/card';
 
@@ -49,39 +50,43 @@ export default function LoginPage() {
             You can login with your credentials or GitHub.
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className='w-full'>
+            <form onSubmit={handleLogin} className="w-full space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-1 block w-full"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-1 block w-full"
+                  required
+                />
+              </div>
+              {error && <p className="text-red-500">{error}</p>}
+              <Button type="submit" className="w-full">Sign in with Email</Button>
+            </form>
+          </div>
+          
+        </CardContent>
         <CardFooter>
-          <form onSubmit={handleLogin} className="w-full space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full"
-                required
-              />
-            </div>
-            {error && <p className="text-red-500">{error}</p>}
-            <Button type="submit" className="w-full">Sign in with Email</Button>
-          </form>
-
-          <form
+        <form
             action={async () => {
               await signIn('github', {
                 redirectTo: '/'
@@ -92,6 +97,7 @@ export default function LoginPage() {
             <Button className="w-full">Sign in with GitHub</Button>
           </form>
         </CardFooter>
+        
       </Card>
     </div>
   );
