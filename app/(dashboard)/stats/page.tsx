@@ -6,12 +6,12 @@ import {
   CardTitle
 } from '@/components/ui/card';
 
-export default function CustomersPage() {
+export default function StatsPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Customers</CardTitle>
-        <CardDescription>View all customers and their orders.</CardDescription>
+        <CardTitle>Statistique</CardTitle>
+        <CardDescription>Les stats seront la </CardDescription>
       </CardHeader>
       <CardContent></CardContent>
     </Card>

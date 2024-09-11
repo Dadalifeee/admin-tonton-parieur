@@ -16,12 +16,12 @@ export async function User() {
   let user = session?.user;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu >
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
           size="icon"
-          className="overflow-hidden rounded-full"
+          className="overflow-hidden rounded-full relative ml-auto md:grow-1"
         >
           <Image
             src={user?.image ?? '/placeholder-user.jpg'}
