@@ -36,6 +36,7 @@ export const users = pgTable('users', {
   password: text('password').notNull(),
 });
 
+export type SelectUser = typeof users.$inferSelect;
 export type SelectProduct = typeof products.$inferSelect;
 export const insertProductSchema = createInsertSchema(products);
 
@@ -91,12 +92,14 @@ export async function createUser({
   username: string;
   password: string;
 }) {
-  await db.insert(users).values({
+  const [user] = await db.insert(users).values({
     email,
     name,
     username,
     password,
-  });
+  }).returning(); // Utiliser .returning() pour retourner l'utilisateur créé
+
+  return user; // Renvoie l'utilisateur créé
 }
 
 // Trouver un utilisateur par email

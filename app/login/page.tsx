@@ -14,9 +14,9 @@ import {
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async (event) => {
+  const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
 
     try {
@@ -86,7 +86,7 @@ export default function LoginPage() {
           
         </CardContent>
         <CardFooter>
-        <form
+        {/* <form
             action={async () => {
               await signIn('github', {
                 redirectTo: '/'
@@ -95,7 +95,7 @@ export default function LoginPage() {
             className="w-full mt-4"
           >
             <Button className="w-full">Sign in with GitHub</Button>
-          </form>
+          </form> */}
         </CardFooter>
         
       </Card>

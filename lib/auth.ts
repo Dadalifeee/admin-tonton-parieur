@@ -9,13 +9,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
 export async function verifyCredentials(email: string, password: string) {
   // Remplace cette logique par ta propre méthode d'authentification
-  const user = await getUserFromDatabase(email); // Une fonction qui récupère l'utilisateur de la base de données
+  const user = await getUserFromDatabase(email); // Récupère l'utilisateur
 
-  if (user && user.password === hashPassword(password)) {
-    // Vérifie le mot de passe ici, par exemple en utilisant bcrypt
-    return user;
-  } else {
-    return null;
+  if (user) {
+    // Attends la résolution du hashage de mot de passe
+    const hashedPassword = await hashPassword(password);
+  
+    if (user.password === hashedPassword) {
+      // Le mot de passe est correct
+      return user;
+    } else {
+      // Le mot de passe est incorrect
+      return null;
+    }
   }
 }
 
