@@ -10,6 +10,7 @@ import {
   CardContent,
   CardTitle
 } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -96,6 +97,11 @@ export default function LoginPage() {
           >
             <Button className="w-full">Sign in with GitHub</Button>
           </form> */}
+          <CardFooter>
+          <p className="text-sm mt-4">
+            Pas de compte ? <Link href="/register" className="text-blue-500 underline">Inscription</Link>
+          </p>
+        </CardFooter>
         </CardFooter>
         
       </Card>

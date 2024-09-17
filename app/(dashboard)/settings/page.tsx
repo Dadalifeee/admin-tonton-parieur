@@ -6,12 +6,12 @@ import {
   CardTitle
 } from '@/components/ui/card';
 
-export default function BetsPage() {
+export default function SettingssPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Paris</CardTitle>
-        <CardDescription>Les paris seront la </CardDescription>
+        <CardTitle>Paramétre</CardTitle>
+        <CardDescription>Parametre</CardDescription>
       </CardHeader>
       <CardContent></CardContent>
     </Card>

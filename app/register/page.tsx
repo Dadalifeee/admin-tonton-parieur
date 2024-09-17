@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation'; // Importe useRouter pour la redire
 import { Button } from '@/components/ui/button';
 import {
   Card,
+  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -60,7 +62,7 @@ export default function RegisterPage() {
             Create an account by providing your details below.
           </CardDescription>
         </CardHeader>
-        <CardFooter>
+        <CardContent>
           <form onSubmit={handleRegister} className="w-full space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium">
@@ -129,6 +131,11 @@ export default function RegisterPage() {
             {error && <p className="text-red-500">{error}</p>}
             <Button type="submit" className="w-full">Register</Button>
           </form>
+        </CardContent>
+        <CardFooter>
+          <p className="text-sm">
+            Vous avez déjà un compte ? <Link href="/login" className="text-blue-500 underline">Connexion</Link>
+          </p>
         </CardFooter>
       </Card>
     </div>
