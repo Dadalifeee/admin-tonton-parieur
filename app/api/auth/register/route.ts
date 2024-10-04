@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { hashPassword } from '@/lib/auth'; // Fonction pour hasher le mot de passe
-import { createUser, findUserByEmail } from '@/lib/db'; // Fonctions pour la DB
+import { createUser, findUserByEmail } from '@/lib/queries/userQueries'; // Fonctions pour la DB
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers'; // Utilisation des cookies
 
