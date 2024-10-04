@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 // Utilise une clé secrète pour JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-export function middleware(req) {
+export function middleware(req: NextRequest) {
   // Récupère les cookies depuis la requête
   const token = req.cookies.get('token')?.value; // Utilise .value pour récupérer la chaîne du token
 
@@ -19,8 +19,8 @@ export function middleware(req) {
 
     // Si la vérification réussit, autorise la requête à continuer
     // (Optionnel: tu peux ajouter le token décodé dans les en-têtes ou la requête pour un usage ultérieur)
-    req.user = decoded;
-    
+    (req as any).user = decoded;
+
     return NextResponse.next();
   } catch (err) {
     console.error('Token error:', err);
