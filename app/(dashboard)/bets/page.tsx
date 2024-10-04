@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 interface Match {
   matchId: number;
@@ -18,8 +19,10 @@ interface Match {
   awayTeamId: number;
   homeTeamName: string;
   homeTeamTrigram: string;
+  homeTeamLogo: string; // Ajout du logo de l'équipe à domicile
   awayTeamName: string;
   awayTeamTrigram: string;
+  awayTeamLogo: string; // Ajout du logo de l'équipe à l'extérieur
   oddsHomeTeam: string;
   oddsAwayTeam: string;
   oddsDraw: string;
@@ -101,14 +104,14 @@ export default function BetsPage() {
   };
 
   return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Paris</CardTitle>
-          <CardDescription>
-            Saisissez vos scores pour le matchday {matchday}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Paris</CardTitle>
+        <CardDescription>
+          Saisissez vos scores pour le matchday {matchday}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         <CardTitle className='text-center'>
           {matchday} {matchday === 1 ? 'ère journée' : 'ème journée'}
         </CardTitle>
@@ -121,7 +124,14 @@ export default function BetsPage() {
               >
                 <div className="flex items-center justify-between w-full">
                   {/* Équipe à domicile (à gauche) */}
-                  <div className="w-1/4 text-left">
+                  <div className="w-1/4 text-left flex items-center">
+                    <Image 
+                      src={match.homeTeamLogo} 
+                      alt={`${match.homeTeamName} logo`} 
+                      width={40} 
+                      height={40} 
+                      className="mr-2"
+                    />
                     <span className="font-semibold">
                       {match.homeTeamName} ({match.homeTeamTrigram})
                     </span>
@@ -151,23 +161,29 @@ export default function BetsPage() {
                   </div>
 
                   {/* Équipe à l'extérieur (à droite) */}
-                  <div className="w-1/4 text-right">
-                    <span className="font-semibold">
+                  <div className="w-1/4 text-right flex items-center justify-end">
+                    <span className="font-semibold mr-2">
                       {match.awayTeamName} ({match.awayTeamTrigram})
                     </span>
+                    <Image 
+                      src={match.awayTeamLogo} 
+                      alt={`${match.awayTeamName} logo`} 
+                      width={40} 
+                      height={40}
+                    />
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      {/* Bouton de soumission global */}
-      <div className="mt-6 flex justify-end">
-        <Button onClick={handleBetSubmit}>
-          Parier pour tous les matchs
-        </Button>
-      </div>
-    </CardContent>
-  </Card>
+        {/* Bouton de soumission global */}
+        <div className="mt-6 flex justify-end">
+          <Button onClick={handleBetSubmit}>
+            Parier pour tous les matchs
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

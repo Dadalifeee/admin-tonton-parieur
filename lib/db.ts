@@ -78,7 +78,7 @@ export const teams = pgTable('teams', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   trigram: text('trigram').notNull().unique(),
-  logoUrl: text('logo_url'),
+  logo_path: text('logo_path'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
