@@ -1,113 +1,93 @@
-import { db, products } from 'lib/db';
+import { db } from 'lib/db';
+import { users, teams, matches } from 'lib/db';
+import { eq, alias } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
-  await db.insert(products).values([
-    {
-      id: 1,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/smartphone-gaPvyZW6aww0IhD3dOpaU6gBGILtcJ.webp',
-      name: 'Smartphone X Pro',
-      status: 'active',
-      price: '999.00',
-      stock: 150,
-      availableAt: new Date()
-    },
-    {
-      id: 2,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/earbuds-3rew4JGdIK81KNlR8Edr8NBBhFTOtX.webp',
-      name: 'Wireless Earbuds Ultra',
-      status: 'active',
-      price: '199.00',
-      stock: 300,
-      availableAt: new Date()
-    },
-    {
-      id: 3,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/home-iTeNnmKSMnrykOS9IYyJvnLFgap7Vw.webp',
-      name: 'Smart Home Hub',
-      status: 'active',
-      price: '149.00',
-      stock: 200,
-      availableAt: new Date()
-    },
-    {
-      id: 4,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/tv-H4l26crxtm9EQHLWc0ddrsXZ0V0Ofw.webp',
-      name: '4K Ultra HD Smart TV',
-      status: 'active',
-      price: '799.00',
-      stock: 50,
-      availableAt: new Date()
-    },
-    {
-      id: 5,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/laptop-9bgUhjY491hkxiMDeSgqb9R5I3lHNL.webp',
-      name: 'Gaming Laptop Pro',
-      status: 'active',
-      price: '1299.00',
-      stock: 75,
-      availableAt: new Date()
-    },
-    {
-      id: 6,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/headset-lYnRnpjDbZkB78lS7nnqEJFYFAUDg6.webp',
-      name: 'VR Headset Plus',
-      status: 'active',
-      price: '349.00',
-      stock: 120,
-      availableAt: new Date()
-    },
-    {
-      id: 7,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/watch-S2VeARK6sEM9QFg4yNQNjHFaHc3sXv.webp',
-      name: 'Smartwatch Elite',
-      status: 'active',
-      price: '249.00',
-      stock: 250,
-      availableAt: new Date()
-    },
-    {
-      id: 8,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/speaker-4Zk0Ctx5AvxnwNNTFWVK4Gtpru4YEf.webp',
-      name: 'Bluetooth Speaker Max',
-      status: 'active',
-      price: '99.00',
-      stock: 400,
-      availableAt: new Date()
-    },
-    {
-      id: 9,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/charger-GzRr0NSkCj0ZYWkTMvxXGZQu47w9r5.webp',
-      name: 'Portable Charger Super',
-      status: 'active',
-      price: '59.00',
-      stock: 500,
-      availableAt: new Date()
-    },
-    {
-      id: 10,
-      imageUrl:
-        'https://uwja77bygk2kgfqe.public.blob.vercel-storage.com/thermostat-8GnK2LDE3lZAjUVtiBk61RrSuqSTF7.webp',
-      name: 'Smart Thermostat Pro',
-      status: 'active',
-      price: '199.00',
-      stock: 175,
-      availableAt: new Date()
-    }
-  ]);
-  return Response.json({
-    message: 'Uncomment to seed data after DB is set up.'
-  });
+export async function GET(req: NextRequest, res: NextResponse) {
 
-  
+  // Insertion des équipes de Ligue 1 (si ce n'est pas déjà fait)
+  await db.insert(teams).values([
+    {
+      name: 'Stade Rennais',
+      trigram: 'REN',
+      logoUrl: 'https://example.com/logos/rennes.png',
+      createdAt: new Date(),
+    },
+    {
+      name: 'OGC Nice',
+      trigram: 'NCE',
+      logoUrl: 'https://example.com/logos/nice.png',
+      createdAt: new Date(),
+    },
+    {
+      name: 'FC Nantes',
+      trigram: 'NAN',
+      logoUrl: 'https://example.com/logos/nantes.png',
+      createdAt: new Date(),
+    },
+    {
+      name: 'RC Strasbourg',
+      trigram: 'STR',
+      logoUrl: 'https://example.com/logos/strasbourg.png',
+      createdAt: new Date(),
+    },
+    {
+      name: 'Montpellier HSC',
+      trigram: 'MPL',
+      logoUrl: 'https://example.com/logos/montpellier.png',
+      createdAt: new Date(),
+    },
+  ]);
+
+  // Récupérer les IDs des équipes pour les références
+  const teamsData = await db.select().from(teams);
+
+  const teamsMap = teamsData.reduce((map, team) => {
+    map[team.trigram] = team.id;
+    return map;
+  }, {} as Record<string, number>);
+
+  // Insertion des matchs du matchday 10
+  await db.insert(matches).values([
+    {
+      teamHomeId: teamsMap['LIL'],
+      teamAwayId: teamsMap['REN'],
+      matchday: 10,
+      matchDate: new Date('2024-10-16T20:00:00'),
+      status: 'upcoming',
+      oddsHomeTeam: '1.80',
+      oddsAwayTeam: '2.20',
+      oddsDraw: '3.00',
+      createdAt: new Date(),
+    },
+    {
+      teamHomeId: teamsMap['NCE'],
+      teamAwayId: teamsMap['NAN'],
+      matchday: 10,
+      matchDate: new Date('2024-10-16T18:00:00'),
+      status: 'upcoming',
+      oddsHomeTeam: '1.95',
+      oddsAwayTeam: '2.05',
+      oddsDraw: '3.20',
+      createdAt: new Date(),
+    },
+    {
+      teamHomeId: teamsMap['STR'],
+      teamAwayId: teamsMap['MPL'],
+      matchday: 10,
+      matchDate: new Date('2024-10-17T20:00:00'),
+      status: 'upcoming',
+      oddsHomeTeam: '2.00',
+      oddsAwayTeam: '2.00',
+      oddsDraw: '3.15',
+      createdAt: new Date(),
+    },
+    // Ajoutez d'autres matchs si nécessaire
+  ]);
+
+  return NextResponse.json({
+    message: 'Les données de seed ont été insérées avec succès !',
+  });
 }

@@ -36,7 +36,52 @@ export const users = pgTable('users', {
   password: text('password').notNull(),
 });
 
-export type SelectUser = typeof users.$inferSelect;
+export const userStatistics = pgTable('user_statistics', {
+  userId: integer('user_id').primaryKey().references(() => users.id, { onDelete: 'cascade' }),
+  totalBets: integer('total_bets').default(0),
+  totalWins: integer('total_wins').default(0),
+  totalLosses: integer('total_losses').default(0),
+  totalPoints: integer('total_points').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const bets = pgTable('bets', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  matchId: integer('match_id').notNull().references(() => matches.id, { onDelete: 'cascade' }),
+  predictedScoreHome: integer('predicted_score_home').notNull(),
+  predictedScoreAway: integer('predicted_score_away').notNull(),
+  betPoints: integer('bet_points').default(0),
+  betResult: text('bet_result').default('pending'),
+  odds: numeric('odds', { precision: 5, scale: 2 }),  
+  potentialWin: numeric('potential_win', { precision: 10, scale: 2 }), 
+  betDate: timestamp('bet_date').defaultNow(),
+});
+
+export const matches = pgTable('matches', {
+  id: serial('id').primaryKey(),
+  teamHomeId: integer('team_home_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
+  teamAwayId: integer('team_away_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
+  scoreHome: integer('score_home'),  
+  scoreAway: integer('score_away'),  
+  matchday: integer('matchday').notNull(),
+  matchDate: timestamp('match_date').notNull(),
+  status: text('status').default('upcoming'),
+  oddsHomeTeam: numeric('odds_home_team', { precision: 5, scale: 2 }),
+  oddsAwayTeam: numeric('odds_away_team', { precision: 5, scale: 2 }),
+  oddsDraw: numeric('odds_draw', { precision: 5, scale: 2 }),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const teams = pgTable('teams', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  trigram: text('trigram').notNull().unique(),
+  logoUrl: text('logo_url'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export type SelectProduct = typeof products.$inferSelect;
 export const insertProductSchema = createInsertSchema(products);
 
@@ -80,36 +125,5 @@ export async function deleteProductById(id: number) {
   await db.delete(products).where(eq(products.id, id));
 }
 
-// Crée un utilisateur dans la base de données
-export async function createUser({
-  email,
-  name,
-  username,
-  password,
-}: {
-  email: string;
-  name: string;
-  username: string;
-  password: string;
-}) {
-  const [user] = await db.insert(users).values({
-    email,
-    name,
-    username,
-    password,
-  }).returning(); // Utiliser .returning() pour retourner l'utilisateur créé
 
-  return user; // Renvoie l'utilisateur créé
-}
-
-// Trouver un utilisateur par email
-export async function findUserByEmail(email: string): Promise<SelectUser | null> {
-  const user = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, email))
-    .limit(1);
-
-  return user.length > 0 ? user[0] : null;
-}
 

@@ -1,5 +1,5 @@
 import { verifyPassword } from '@/lib/auth';
-import { findUserByEmail } from '@/lib/db';
+import { findUserByEmail } from '@/lib/queries/userQueries';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers'; // Utilisation des cookies Next.js

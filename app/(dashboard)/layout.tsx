@@ -8,6 +8,7 @@ import {
   Settings,
   ShoppingCart,
   Users2,
+  FlaskConical,
   LandPlot
 } from 'lucide-react';
 
@@ -83,6 +84,10 @@ function DesktopNav() {
 
         <NavItem href="/products" label="Products">
           <Package className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem href="/test" label="test">
+          <FlaskConical className="h-5 w-5" />
         </NavItem>
       </nav>
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
