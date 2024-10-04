@@ -1,6 +1,5 @@
 import { db } from 'lib/db';
-import { users, teams, matches } from 'lib/db';
-import { eq, alias } from 'drizzle-orm';
+import { teams, matches } from 'lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
