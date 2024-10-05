@@ -1,15 +1,16 @@
-"use client"
-import { useEffect, useState } from 'react';
+"use client";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import Image from 'next/image';
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Image from "next/image";
+import { SquareChevronLeft, SquareChevronRight} from 'lucide-react';
 
 interface Match {
   matchId: number;
@@ -29,7 +30,7 @@ interface Match {
 }
 
 export default function BetsPage() {
-  const [matchday, setMatchday] = useState<number>(10);
+  const [matchday, setMatchday] = useState<number>(3);
   const [matchList, setMatchList] = useState<Match[]>([]);
   const [scores, setScores] = useState<
     Record<number, { home?: string; away?: string }>
@@ -40,7 +41,7 @@ export default function BetsPage() {
       try {
         const res = await fetch(`/api/matches/${matchday}`);
         if (!res.ok) {
-          throw new Error('Failed to fetch matches');
+          throw new Error("Failed to fetch matches");
         }
         const data: Match[] = await res.json();
         setMatchList(data);
@@ -54,7 +55,7 @@ export default function BetsPage() {
 
   const handleScoreChange = (
     matchId: number,
-    team: 'home' | 'away',
+    team: "home" | "away",
     score: string
   ) => {
     setScores({
@@ -67,40 +68,52 @@ export default function BetsPage() {
   };
 
   const handleBetSubmit = async () => {
-    const bets = Object.entries(scores).map(([matchId, scores]) => ({
-      matchId: Number(matchId),
-      userId: 1, // Remplace par l'ID de l'utilisateur connecté
-      predictedScoreHome: scores.home,
-      predictedScoreAway: scores.away,
-      betPoints: 0,
-      betResult: 'pending',
-      betDate: new Date(),
-    })).filter(bet => bet.predictedScoreHome !== undefined && bet.predictedScoreAway !== undefined);
+    const bets = Object.entries(scores)
+      .map(([matchId, scores]) => ({
+        matchId: Number(matchId),
+        userId: 1, // Remplace par l'ID de l'utilisateur connecté
+        predictedScoreHome: scores.home,
+        predictedScoreAway: scores.away,
+        betPoints: 0,
+        betResult: "pending",
+        betDate: new Date(),
+      }))
+      .filter(
+        (bet) =>
+          bet.predictedScoreHome !== undefined &&
+          bet.predictedScoreAway !== undefined
+      );
 
     if (bets.length === 0) {
-      alert('Veuillez entrer les scores pour au moins un match.');
+      alert("Veuillez entrer les scores pour au moins un match.");
       return;
     }
 
     try {
-      const res = await fetch('/api/bets', {
-        method: 'POST',
+      const res = await fetch("/api/bets", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(bets),
       });
 
       if (res.ok) {
-        alert('Paris soumis avec succès !');
+        alert("Paris soumis avec succès !");
         setScores({}); // Réinitialiser les scores après soumission
       } else {
-        alert('Échec de la soumission des paris.');
+        alert("Échec de la soumission des paris.");
       }
     } catch (err) {
       console.error(err);
-      alert('Une erreur est survenue lors de la soumission des paris.');
+      alert("Une erreur est survenue lors de la soumission des paris.");
     }
+  };
+
+  const handleMatchdayChange = (direction: "next" | "prev") => {
+    setMatchday((prevMatchday) =>
+      direction === "next" ? prevMatchday + 1 : prevMatchday - 1
+    );
   };
 
   return (
@@ -112,11 +125,11 @@ export default function BetsPage() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <CardTitle className='text-center'>
-          {matchday} {matchday === 1 ? 'ère journée' : 'ème journée'}
+        <CardTitle className="text-center">
+          {matchday} {matchday === 1 ? "ère journée" : "ème journée"}
         </CardTitle>
         <div className="flex justify-center p-4">
-          <div className=' max-w-4xl'>
+          <div className=" max-w-4xl">
             {matchList.map((match) => (
               <div
                 key={match.matchId}
@@ -125,11 +138,11 @@ export default function BetsPage() {
                 <div className="flex items-center justify-between w-full">
                   {/* Équipe à domicile (à gauche) */}
                   <div className="w-1/4 text-left flex items-center">
-                    <Image 
-                      src={match.homeTeamLogo} 
-                      alt={`${match.homeTeamName} logo`} 
-                      width={40} 
-                      height={40} 
+                    <Image
+                      src={match.homeTeamLogo}
+                      alt={`${match.homeTeamName} logo`}
+                      width={40}
+                      height={40}
                       className="mr-2"
                     />
                     <span className="font-semibold">
@@ -141,9 +154,9 @@ export default function BetsPage() {
                   <div className="w-2/4 flex items-center justify-center space-x-4">
                     <Input
                       type="number"
-                      value={scores[match.matchId]?.home || ''}
+                      value={scores[match.matchId]?.home || ""}
                       onChange={(e) =>
-                        handleScoreChange(match.matchId, 'home', e.target.value)
+                        handleScoreChange(match.matchId, "home", e.target.value)
                       }
                       className="w-20 text-center"
                       placeholder="Home"
@@ -151,9 +164,9 @@ export default function BetsPage() {
                     <span className="text-2xl">-</span>
                     <Input
                       type="number"
-                      value={scores[match.matchId]?.away || ''}
+                      value={scores[match.matchId]?.away || ""}
                       onChange={(e) =>
-                        handleScoreChange(match.matchId, 'away', e.target.value)
+                        handleScoreChange(match.matchId, "away", e.target.value)
                       }
                       className="w-20 text-center"
                       placeholder="Away"
@@ -165,10 +178,10 @@ export default function BetsPage() {
                     <span className="font-semibold mr-2">
                       {match.awayTeamName} ({match.awayTeamTrigram})
                     </span>
-                    <Image 
-                      src={match.awayTeamLogo} 
-                      alt={`${match.awayTeamName} logo`} 
-                      width={40} 
+                    <Image
+                      src={match.awayTeamLogo}
+                      alt={`${match.awayTeamName} logo`}
+                      width={40}
                       height={40}
                     />
                   </div>
@@ -179,8 +192,23 @@ export default function BetsPage() {
         </div>
         {/* Bouton de soumission global */}
         <div className="mt-6 flex justify-end">
-          <Button onClick={handleBetSubmit}>
-            Parier pour tous les matchs
+          <Button onClick={handleBetSubmit}>Parier pour tous les matchs</Button>
+        </div>
+        {/* Navigation entre les journées de match */}
+        <div className="mt-6 flex justify-between items-center">
+          {/* Bouton pour journée précédente */}
+          <Button
+            onClick={() => handleMatchdayChange("prev")}
+            disabled={matchday === 1} // Désactiver si matchday = 1
+          >
+            <SquareChevronLeft className="h-6 w-6" />
+            Précédent
+          </Button>
+
+          {/* Bouton pour journée suivante */}
+          <Button onClick={() => handleMatchdayChange("next")}>
+            Suivant
+            <SquareChevronRight className="h-6 w-6" />
           </Button>
         </div>
       </CardContent>
