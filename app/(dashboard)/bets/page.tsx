@@ -108,7 +108,7 @@ export default function BetsPage() {
       <CardHeader>
         <CardTitle>Paris</CardTitle>
         <CardDescription>
-          Saisissez vos scores pour le matchday {matchday}
+          Saisissez vos scores pour la journée {matchday}
         </CardDescription>
       </CardHeader>
       <CardContent>
