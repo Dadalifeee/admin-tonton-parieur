@@ -1,36 +1,76 @@
-import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
-// Utilise une clé secrète pour JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+// Utilisation de la clé secrète pour HMAC-SHA256
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'your-secret-key');
 
-export function middleware(req: NextRequest) {
-  // Récupère les cookies depuis la requête
-  const token = req.cookies.get('token')?.value; // Utilise .value pour récupérer la chaîne du token
+// Fonction pour décoder Base64URL
+function base64UrlDecode(input: string) {
+  // Remplace les caractères spécifiques à Base64URL par les caractères standard Base64
+  input = input.replace(/-/g, '+').replace(/_/g, '/');
+  
+  // Ajouter le padding "=" si nécessaire
+  const pad = input.length % 4;
+  if (pad) {
+    input += '='.repeat(4 - pad);
+  }
+  
+  return atob(input);
+}
 
+// Fonction pour vérifier le JWT avec Web Crypto API (HMAC-SHA256)
+async function verifyJWT(token: string) {
+  const [header, payload, signature] = token.split('.');
+  const data = `${header}.${payload}`;
+  const signatureBuffer = Uint8Array.from(base64UrlDecode(signature), (c) => c.charCodeAt(0));
+
+  const key = await crypto.subtle.importKey(
+    'raw',
+    JWT_SECRET,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['verify']
+  );
+
+  const valid = await crypto.subtle.verify(
+    'HMAC',
+    key,
+    signatureBuffer,
+    new TextEncoder().encode(data)
+  );
+
+  if (!valid) {
+    throw new Error('Invalid JWT signature');
+  }
+
+  // Décoder le payload
+  return JSON.parse(base64UrlDecode(payload));
+}
+
+export async function middleware(req: Request) {
+  // Récupérer les cookies
+  const cookieStore = cookies();
+  const token = cookieStore.get('token')?.value;
+
+  // Si pas de token, renvoyer un 401 Unauthorized
   if (!token) {
-    // Si aucun token n'est trouvé, renvoie une réponse non autorisée ou redirige
-    return NextResponse.redirect(new URL('/login', req.url));
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    // Vérifie le token avec la clé secrète
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // Vérifier le token JWT avec Web Crypto API
+    const decoded = await verifyJWT(token);
 
-    // Si la vérification réussit, autorise la requête à continuer
-    // (Optionnel: tu peux ajouter le token décodé dans les en-têtes ou la requête pour un usage ultérieur)
-    (req as any).user = decoded;
-
+    // Utilisateur authentifié, laisser la requête continuer
     return NextResponse.next();
   } catch (err) {
-    console.error('Token error:', err);
-
-    // Si la vérification échoue, renvoie une redirection ou une réponse non autorisée
-    return NextResponse.redirect(new URL('/login', req.url));
+    console.error('Invalid token:', err);
+    // Si la vérification échoue, renvoyer un 401 Unauthorized
+    return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 }
 
-// Configuration pour matcher certaines routes protégées
+// Configuration pour matcher certaines routes
 export const config = {
-  matcher: ['/protected-route/:path*'], // Définis ici les routes que tu veux protéger
+  matcher: ['/api/matches/:path*'], // Spécifie les routes à protéger
 };

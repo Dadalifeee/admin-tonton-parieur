@@ -40,8 +40,15 @@ export async function POST(request: Request) {
   // Crée une réponse et stocke le token JWT dans les cookies
   const response = NextResponse.json({ success: true });
 
+  response.cookies.set('user_id', user.id.toString(), {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production', // Utiliser secure en production
+    path: '/', // Le cookie est disponible sur tout le site
+    maxAge: 60 * 60, // Le cookie expire dans 1 heure
+  });
+
   response.cookies.set('token', token, {
-    httpOnly: true, // Cookie non accessible par JavaScript
+    httpOnly: false,
     secure: process.env.NODE_ENV === 'production', // Utiliser secure en production
     path: '/', // Le cookie est disponible sur tout le site
     maxAge: 60 * 60, // Le cookie expire dans 1 heure

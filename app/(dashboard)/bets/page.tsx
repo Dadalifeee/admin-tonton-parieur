@@ -10,7 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { SquareChevronLeft, SquareChevronRight} from 'lucide-react';
+import { SquareChevronLeft, SquareChevronRight } from "lucide-react";
+import { getCookie } from '@/lib/cookies/cookies';
 
 interface Match {
   matchId: number;
@@ -20,29 +21,50 @@ interface Match {
   awayTeamId: number;
   homeTeamName: string;
   homeTeamTrigram: string;
-  homeTeamLogo: string; // Ajout du logo de l'équipe à domicile
+  homeTeamLogo: string;
   awayTeamName: string;
   awayTeamTrigram: string;
-  awayTeamLogo: string; // Ajout du logo de l'équipe à l'extérieur
+  awayTeamLogo: string;
   oddsHomeTeam: string;
   oddsAwayTeam: string;
   oddsDraw: string;
 }
 
 export default function BetsPage() {
-  const [matchday, setMatchday] = useState<number>(3);
+  const [matchday, setMatchday] = useState<number | null>(null); // Débuter avec `null`
   const [matchList, setMatchList] = useState<Match[]>([]);
   const [scores, setScores] = useState<
     Record<number, { home?: string; away?: string }>
   >({});
 
+  // Fonction pour récupérer la journée en cours
+  const getCurrentMatchday = async () => {
+    try {
+      const res = await fetch(`/api/matches/current`);
+      if (!res.ok) throw new Error("Failed to fetch current matchday");
+
+      const data = await res.json();
+      return data.matchday || 1;
+    } catch (err) {
+      console.error("Error fetching current matchday:", err);
+      return 1; // Valeur par défaut si une erreur survient
+    }
+  };
+
   useEffect(() => {
     async function fetchMatches() {
       try {
-        const res = await fetch(`/api/matches/${matchday}`);
-        if (!res.ok) {
-          throw new Error("Failed to fetch matches");
+        // Si `matchday` n'est pas encore défini, obtenir la journée courante
+        if (matchday === null) {
+          const currentMatchday = await getCurrentMatchday();
+          setMatchday(currentMatchday);
+          return;
         }
+
+        // Requête API avec le `matchday`
+        const res = await fetch(`/api/matches/${matchday}`);
+        if (!res.ok) throw new Error("Failed to fetch matches");
+
         const data: Match[] = await res.json();
         setMatchList(data);
       } catch (err) {
@@ -71,7 +93,7 @@ export default function BetsPage() {
     const bets = Object.entries(scores)
       .map(([matchId, scores]) => ({
         matchId: Number(matchId),
-        userId: 1, // Remplace par l'ID de l'utilisateur connecté
+        userId: getCookie("user_id"),
         predictedScoreHome: scores.home,
         predictedScoreAway: scores.away,
         betPoints: 0,
@@ -112,9 +134,13 @@ export default function BetsPage() {
 
   const handleMatchdayChange = (direction: "next" | "prev") => {
     setMatchday((prevMatchday) =>
-      direction === "next" ? prevMatchday + 1 : prevMatchday - 1
+      direction === "next" ? (prevMatchday ?? 1) + 1 : (prevMatchday ?? 1) - 1
     );
   };
+
+  if (matchday === null) {
+    return <p>Chargement des matchs...</p>; // Affichage d'un état de chargement
+  }
 
   return (
     <Card className="w-full">
