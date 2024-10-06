@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { SquareChevronLeft, SquareChevronRight } from "lucide-react";
-import { getCookie } from '@/lib/cookies/cookies';
+import { getCookie } from "@/lib/cookies/cookies";
 
 interface Match {
   matchId: number;
@@ -162,7 +162,21 @@ export default function BetsPage() {
                 className="hover:bg-gray-100 p-4 border-b flex items-center"
               >
                 <div className="flex items-center justify-between w-full">
-                  {/* Équipe à domicile (à gauche) */}
+                  {/* Date du match */}
+                  <div className="w-1/4 text-left">
+                  <span>
+                    {new Date(match.matchDate).toLocaleString('fr-FR', {
+                      weekday: 'long', // Jour de la semaine (ex: lundi)
+                      year: 'numeric', // Année
+                      month: 'long',   // Mois (ex: janvier)
+                      day: 'numeric',  // Jour du mois
+                      hour: '2-digit', // Heure
+                      minute: '2-digit', // Minutes
+                    })}
+                  </span>
+                  </div>
+
+                  {/* Équipe à domicile */}
                   <div className="w-1/4 text-left flex items-center">
                     <Image
                       src={match.homeTeamLogo}
@@ -176,7 +190,7 @@ export default function BetsPage() {
                     </span>
                   </div>
 
-                  {/* Champs de saisie du score (au milieu) */}
+                  {/* Champs de saisie du score */}
                   <div className="w-2/4 flex items-center justify-center space-x-4">
                     <Input
                       type="number"
@@ -199,7 +213,7 @@ export default function BetsPage() {
                     />
                   </div>
 
-                  {/* Équipe à l'extérieur (à droite) */}
+                  {/* Équipe à l'extérieur */}
                   <div className="w-1/4 text-right flex items-center justify-end">
                     <span className="font-semibold mr-2">
                       {match.awayTeamName} ({match.awayTeamTrigram})

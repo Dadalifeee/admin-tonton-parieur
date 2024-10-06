@@ -36,13 +36,13 @@ export async function GET(
         awayTeamLogo: awayTeam.logo_path,
         oddsHomeTeam: matches.oddsHomeTeam,
         oddsAwayTeam: matches.oddsAwayTeam,
-        oddsDraw: matches.oddsDraw,
+        oddsDraw: matches.oddsDraw
       })
       .from(matches)
       .leftJoin(homeTeam, eq(matches.teamHomeId, homeTeam.id))
       .leftJoin(awayTeam, eq(matches.teamAwayId, awayTeam.id))
       .where(eq(matches.matchday, Number(matchday)))
-      .orderBy(matches.matchday);
+      .orderBy(matches.matchDate);
 
     if (matchData.length === 0) {
       return NextResponse.json(
