@@ -9,9 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import LoginRequiredCard  from "@/components/ui/LoginRequiredCard";
 import Image from "next/image";
 import { SquareChevronLeft, SquareChevronRight } from "lucide-react";
 import { getCookie } from "@/lib/cookies/cookies";
+import Link from "next/link"; // Importer Link pour la redirection
 
 interface Match {
   matchId: number;
@@ -31,11 +33,18 @@ interface Match {
 }
 
 export default function BetsPage() {
-  const [matchday, setMatchday] = useState<number | null>(null); // Débuter avec `null`
+  const [matchday, setMatchday] = useState<number | null>(null);
   const [matchList, setMatchList] = useState<Match[]>([]);
   const [scores, setScores] = useState<
     Record<number, { home?: string; away?: string }>
   >({});
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // Gérer l'authentification
+
+  // Vérifier si l'utilisateur est authentifié
+  useEffect(() => {
+    const userId = getCookie("user_id");
+    setIsAuthenticated(!!userId); // Si un user_id est présent dans les cookies, l'utilisateur est connecté
+  }, []);
 
   // Fonction pour récupérer la journée en cours
   const getCurrentMatchday = async () => {
@@ -142,6 +151,13 @@ export default function BetsPage() {
     return <p>Chargement des matchs...</p>; // Affichage d'un état de chargement
   }
 
+  // Si l'utilisateur n'est pas authentifié, afficher un bouton de connexion
+  if (!isAuthenticated) {
+    return (
+      <LoginRequiredCard/>
+    )
+  }
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -164,16 +180,16 @@ export default function BetsPage() {
                 <div className="flex items-center justify-between w-full">
                   {/* Date du match */}
                   <div className="w-1/4 text-left">
-                  <span>
-                    {new Date(match.matchDate).toLocaleString('fr-FR', {
-                      weekday: 'long', // Jour de la semaine (ex: lundi)
-                      year: 'numeric', // Année
-                      month: 'long',   // Mois (ex: janvier)
-                      day: 'numeric',  // Jour du mois
-                      hour: '2-digit', // Heure
-                      minute: '2-digit', // Minutes
-                    })}
-                  </span>
+                    <span>
+                      {new Date(match.matchDate).toLocaleString("fr-FR", {
+                        weekday: "long", // Jour de la semaine (ex: lundi)
+                        year: "numeric", // Année
+                        month: "long", // Mois (ex: janvier)
+                        day: "numeric", // Jour du mois
+                        hour: "2-digit", // Heure
+                        minute: "2-digit", // Minutes
+                      })}
+                    </span>
                   </div>
 
                   {/* Équipe à domicile */}

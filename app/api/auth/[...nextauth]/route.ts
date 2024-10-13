@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       email: user.email,
     },
     JWT_SECRET,
-    { expiresIn: '1h' } // Le token expire dans 1 heure
+    { expiresIn: '48h' } // Le token expire dans 1 heure
   );
 
   // Crée une réponse et stocke le token JWT dans les cookies

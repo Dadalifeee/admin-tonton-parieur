@@ -72,5 +72,5 @@ export async function middleware(req: Request) {
 
 // Configuration pour matcher certaines routes
 export const config = {
-  matcher: ['/api/matches/:path*'], // Spécifie les routes à protéger
+  matcher: ['/api/matches/:path*', "/api/matches/current"], // Spécifie les routes à protéger
 };

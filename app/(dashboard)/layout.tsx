@@ -82,10 +82,6 @@ function DesktopNav() {
           <LineChart className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/products" label="Products">
-          <Package className="h-5 w-5" />
-        </NavItem>
-
         <NavItem href="/test" label="test">
           <FlaskConical className="h-5 w-5" />
         </NavItem>
@@ -139,13 +135,6 @@ function MobileNav() {
           >
             <ShoppingCart className="h-5 w-5" />
             Orders
-          </Link>
-          <Link
-            href="#"
-            className="flex items-center gap-4 px-2.5 text-foreground"
-          >
-            <Package className="h-5 w-5" />
-            Products
           </Link>
           <Link
             href="#"
